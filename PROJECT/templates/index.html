@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% block title %}NexusDesk — Intelligent Support Platform{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">{% endblock %}
+{% block header %}{% include 'header.html' %}{% endblock %}
+
+{% block content %}
+
+{# ══ HERO ═════════════════════════════════════════════════════ #}
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Next-gen support platform
+    </div>
+
+    <h1 class="hero-h1">
+      <span class="h1-line-1">Support that</span>
+      <span class="h1-teal">moves fast.</span>
+      <span class="h1-line-2">Teams that</span>
+      <span class="h1-amber">stay sharp.</span>
+    </h1>
+
+    <p class="hero-sub">
+      NexusDesk unifies your clients, support engineers, and operations data on one
+      intelligent platform — backed by dual-database research-grade infrastructure
+      (MongoDB + MySQL) for enterprise reliability.
+    </p>
+
+    <div class="hero-cta">
+      <a href="{{ url_for('auth.signup') }}" class="btn-xl btn-xl-p">⬡ Start Free →</a>
+      <a href="{{ url_for('auth.login') }}"  class="btn-xl btn-xl-o">Sign In</a>
+    </div>
+
+    {# Live counters — populated by index.js via /api/stats #}
+    <div class="live-bar">
+      <div class="lb-item">
+        <div class="lb-live">LIVE</div>
+        <div class="lb-num" style="color:var(--teal)" id="cntTotal">—</div>
+        <div class="lb-label">Tickets Raised</div>
+      </div>
+      <div class="lb-item">
+        <div class="lb-live">LIVE</div>
+        <div class="lb-num" style="color:var(--success)" id="cntResolved">—</div>
+        <div class="lb-label">Resolved</div>
+      </div>
+      <div class="lb-item">
+        <div class="lb-live">LIVE</div>
+        <div class="lb-num" style="color:var(--amber)" id="cntRate">—</div>
+        <div class="lb-label">Resolution Rate</div>
+      </div>
+      <div class="lb-item">
+        <div class="lb-num" style="color:var(--sky)" id="cntResp">—</div>
+        <div class="lb-label">Avg Response</div>
+      </div>
+    </div>
+  </div>
+
+  {# ── Dashboard preview card ── #}
+  <div class="hero-right">
+    <div class="dash-preview">
+      <div class="dp-titlebar">
+        <div class="dp-dot" style="background:#f43f5e"></div>
+        <div class="dp-dot" style="background:#f59e0b"></div>
+        <div class="dp-dot" style="background:#10b981"></div>
+        <span class="dp-label">nexusdesk · admin · live</span>
+      </div>
+      <div class="dp-body">
+        <div class="dp-kpis">
+          <div class="dp-kpi"><div class="dp-kpi-n" style="color:var(--warning)">24</div><div class="dp-kpi-l">Open</div></div>
+          <div class="dp-kpi"><div class="dp-kpi-n" style="color:var(--teal)">11</div><div class="dp-kpi-l">In Progress</div></div>
+          <div class="dp-kpi"><div class="dp-kpi-n" style="color:var(--success)">218</div><div class="dp-kpi-l">Resolved</div></div>
+        </div>
+        <div class="dp-bar-wrap">
+          <div class="dp-bar-title">WEEKLY VOLUME</div>
+          <div class="dp-bars">
+            <div class="dp-bar" style="height:55%;background:var(--teal)"></div>
+            <div class="dp-bar" style="height:75%;background:var(--teal)"></div>
+            <div class="dp-bar" style="height:45%;background:var(--teal)"></div>
+            <div class="dp-bar" style="height:90%;background:var(--amber)"></div>
+            <div class="dp-bar" style="height:65%;background:var(--teal)"></div>
+            <div class="dp-bar" style="height:80%;background:var(--teal)"></div>
+            <div class="dp-bar" style="height:60%;background:var(--teal)"></div>
+          </div>
+        </div>
+        <div class="dp-ticket">
+          <div class="dp-t-dot" style="background:var(--danger)"></div>
+          <div class="dp-t-info">
+            <div class="dp-t-title">Auth service 500 — Production</div>
+            <div class="dp-t-sub">TK-1042 · 2m ago · Dev Team</div>
+          </div>
+          <div class="dp-t-badge" style="background:rgba(244,63,94,.15);color:#f43f5e">CRITICAL</div>
+        </div>
+        <div class="dp-ticket">
+          <div class="dp-t-dot" style="background:var(--amber)"></div>
+          <div class="dp-t-info">
+            <div class="dp-t-title">Dashboard slow on mobile</div>
+            <div class="dp-t-sub">TK-1041 · 14m ago · UI Team</div>
+          </div>
+          <div class="dp-t-badge" style="background:rgba(245,158,11,.15);color:#f59e0b">HIGH</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ══ FEATURES ═════════════════════════════════════════════════ #}
+<section class="features-section" id="features">
+  <div class="sec-tag">Platform Features</div>
+  <h2 class="sec-title">Built for teams that<br>demand <span style="color:var(--teal)">more</span></h2>
+  <p class="sec-sub">From ticket creation to resolution analytics, every workflow is designed to move fast and surface insights instantly.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="fc-icon" style="background:rgba(20,184,166,.1)">🎯</div>
+      <h3 class="fc-title">Intelligent Ticket Routing</h3>
+      <p class="fc-desc">Automatically categorise, prioritise and assign tickets based on content analysis, reducing manual triage by 60%.</p>
+      <div class="fc-tag">// zero-config setup</div>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon" style="background:rgba(245,158,11,.1)">📊</div>
+      <h3 class="fc-title">Live Admin Dashboard</h3>
+      <p class="fc-desc">Real-time KPIs, resolution rings, and DB performance charts — every number refreshes live so your ops team always has the picture.</p>
+      <div class="fc-tag">// chart.js powered</div>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon" style="background:rgba(124,58,237,.1)">⚡</div>
+      <h3 class="fc-title">Dual-Database Architecture</h3>
+      <p class="fc-desc">MongoDB handles flexible document storage; MySQL powers relational queries and reporting. Every operation is benchmarked for the research paper.</p>
+      <div class="fc-tag">// mysql + mongodb</div>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon" style="background:rgba(56,189,248,.1)">🔒</div>
+      <h3 class="fc-title">Role-Based Access</h3>
+      <p class="fc-desc">Clients see only their tickets. Admins get the full command centre. Every route is protected with Flask-Login and CSRF tokens.</p>
+      <div class="fc-tag">// flask-wtf protected</div>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon" style="background:rgba(16,185,129,.1)">🐳</div>
+      <h3 class="fc-title">One-Command Deploy</h3>
+      <p class="fc-desc">Docker Compose brings up Flask, MySQL and MongoDB with health checks and automatic retry logic. From zero to live in 30 seconds.</p>
+      <div class="fc-tag">// docker compose up</div>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon" style="background:rgba(244,63,94,.1)">📈</div>
+      <h3 class="fc-title">Performance Benchmarking</h3>
+      <p class="fc-desc">Every DB operation is timed and logged. Seed 1000 realistic tickets with one click and watch the radar, latency and volume charts populate in real time.</p>
+      <div class="fc-tag">// research-grade data</div>
+    </div>
+  </div>
+</section>
+
+{# ══ HOW IT WORKS ═════════════════════════════════════════════ #}
+<section class="hiw-section" id="howitworks">
+  <div class="sec-tag">Workflow</div>
+  <h2 class="sec-title">From issue to resolution<br>in <span style="color:var(--amber)">4 steps</span></h2>
+
+  <div class="hiw-grid">
+    <div class="hiw-step">
+      <div class="hiw-step-num">01</div>
+      <div class="hiw-step-title">Client Raises Ticket</div>
+      <div class="hiw-step-desc">Client fills a structured form — title, category, priority, environment. Written to MySQL and MongoDB simultaneously.</div>
+      <div class="hiw-step-stat" style="color:var(--teal)" id="hiwTicketsToday">—</div>
+      <div class="kpi-sub">tickets today</div>
+    </div>
+    <div class="hiw-step">
+      <div class="hiw-step-num">02</div>
+      <div class="hiw-step-title">Admin Reviews Queue</div>
+      <div class="hiw-step-desc">Admin dashboard surfaces unread tickets sorted by priority. Assign to team and update status to In Progress.</div>
+      <div class="hiw-step-stat" style="color:var(--amber)" id="hiwCritical">—</div>
+      <div class="kpi-sub">critical open</div>
+    </div>
+    <div class="hiw-step">
+      <div class="hiw-step-num">03</div>
+      <div class="hiw-step-title">Team Resolves Issue</div>
+      <div class="hiw-step-desc">Admin writes a response, updates status to Resolved. Client receives the update immediately on their portal.</div>
+      <div class="hiw-step-stat" style="color:var(--success)" id="hiwResolved">—</div>
+      <div class="kpi-sub">resolved today</div>
+    </div>
+    <div class="hiw-step">
+      <div class="hiw-step-num">04</div>
+      <div class="hiw-step-title">Metrics Captured</div>
+      <div class="hiw-step-desc">Every operation timing is logged to PerformanceLog. Charts update live. Research data accumulates automatically.</div>
+      <div class="hiw-step-stat" style="color:var(--violet)" id="hiwAvgResp">—</div>
+      <div class="kpi-sub">avg resolution</div>
+    </div>
+  </div>
+</section>
+
+{# ══ CTA ══════════════════════════════════════════════════════ #}
+<section class="cta-band" id="database">
+  <div class="sec-tag" style="justify-content:center">Research Project</div>
+  <h2>MySQL vs MongoDB —<br><span style="color:var(--teal)">benchmarked live</span></h2>
+  <p>NexusDesk was built as a research platform to compare relational and document databases at scale. MongoDB inserts 37.3% faster; MySQL JOIN queries are 2.3x faster. Every number in the dashboard is real.</p>
+  <div class="cta-actions">
+    <a href="{{ url_for('auth.signup') }}" class="btn-xl btn-xl-p">⬡ Create Account Free</a>
+    <a href="{{ url_for('auth.login') }}"  class="btn-xl btn-xl-o">I have an account</a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block footer %}
+<footer class="site-footer">
+  <a href="{{ url_for('main.index') }}" class="flogo">
+    <div class="fmark">⬡</div>
+    Nexus<span>Desk</span>
+  </a>
+  <span>© 2025 NexusDesk Research Platform</span>
+  <div class="flinks">
+    <a href="{{ url_for('auth.login') }}">Sign In</a>
+    <a href="{{ url_for('auth.signup') }}">Sign Up</a>
+  </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}

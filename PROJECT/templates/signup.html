@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}Create Account — NexusDesk{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">{% endblock %}
+{% block header %}{% endblock %}
+{% block background %}{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
+<div class="bg-noise"></div>
+<div class="bg-dots"></div>
+<div class="orb orb1" style="background:var(--amber)"></div>
+<div class="orb orb2"></div>
+
+<div class="auth-page">
+
+  <div class="auth-left amber-tint">
+    <a href="{{ url_for('main.index') }}" class="auth-logo">
+      <div class="auth-logo-mark">⬡</div>
+      <div class="auth-logo-text">Nexus<span>Desk</span></div>
+    </a>
+    <div class="auth-panel-center">
+      <h2>Everything your<br>support team needs.</h2>
+      <p>Join NexusDesk and give your clients a world-class support experience from day one.</p>
+    </div>
+    <ul class="auth-perk-list">
+      <li class="auth-perk-item">
+        <div class="perk-icon" style="background:rgba(20,184,166,.12)">📋</div>
+        <div><h4>Raise &amp; Track Tickets</h4><p>Submit issues instantly and track every update in real time.</p></div>
+      </li>
+      <li class="auth-perk-item">
+        <div class="perk-icon" style="background:rgba(245,158,11,.12)">📊</div>
+        <div><h4>Live Admin Dashboard</h4><p>Powerful charts, KPIs, and dual-database performance metrics.</p></div>
+      </li>
+      <li class="auth-perk-item">
+        <div class="perk-icon" style="background:rgba(124,58,237,.12)">⚡</div>
+        <div><h4>60-Second Setup</h4><p>Create your account and raise your first ticket in under a minute.</p></div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="auth-right wide">
+    <div class="form-box">
+      <div class="form-box-header">
+        <h1>Create your account</h1>
+        <p>Already have one? <a href="{{ url_for('auth.login') }}">Sign in →</a></p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="flash flash-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.signup') }}" id="signupForm">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          <label>Account type</label>
+          <div class="role-select">
+            <button type="button" class="role-btn active" onclick="selectRole('client',this,'accountType')"><span class="rb-icon">👤</span> Client</button>
+            <button type="button" class="role-btn"        onclick="selectRole('admin',this,'accountType')"><span class="rb-icon">🛡️</span> Admin</button>
+          </div>
+          <input type="hidden" name="account_type" id="accountType" value="client">
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>First Name <span class="label-req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              {{ form.first_name(placeholder='Farhaan') }}
+            </div>
+            {% for e in form.first_name.errors %}<div class="flash flash-error" style="margin-top:4px">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="form-group">
+            <label>Last Name <span class="label-req">*</span></label>
+            {{ form.last_name(placeholder='Shaikh') }}
+            {% for e in form.last_name.errors %}<div class="flash flash-error" style="margin-top:4px">{{ e }}</div>{% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address <span class="label-req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">✉</span>
+            {{ form.email(placeholder='you@company.com') }}
+          </div>
+          {% for e in form.email.errors %}<div class="flash flash-error" style="margin-top:4px">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Company</label>
+            {{ form.company(placeholder='TechNova') }}
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            {{ form.department() }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Password <span class="label-req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">🔑</span>
+            {{ form.password(id='pwdField', placeholder='Min. 8 characters', oninput='checkPwd(this)') }}
+            <button type="button" class="toggle-pwd-btn" onclick="togglePassword('pwdField',this)" tabindex="-1">👁</button>
+          </div>
+          <div class="pwd-strength" id="pwdStrength">
+            <div class="ps-bar" id="ps1"></div><div class="ps-bar" id="ps2"></div><div class="ps-bar" id="ps3"></div><div class="ps-bar" id="ps4"></div>
+          </div>
+          {% for e in form.password.errors %}<div class="flash flash-error" style="margin-top:4px">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label>Confirm Password <span class="label-req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">🔑</span>
+            {{ form.confirm_password(placeholder='Repeat password') }}
+          </div>
+          {% for e in form.confirm_password.errors %}<div class="flash flash-error" style="margin-top:4px">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            {{ form.terms() }}
+            I agree to the <a href="#" style="color:var(--teal)">Terms of Service</a>
+          </label>
+          {% for e in form.terms.errors %}<div class="flash flash-error" style="margin-top:4px">{{ e }}</div>{% endfor %}
+        </div>
+
+        {{ form.submit(class='btn-submit') }}
+      </form>
+
+      <a href="{{ url_for('main.index') }}" class="back-home">← Back to homepage</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

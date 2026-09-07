@@ -1,0 +1,283 @@
+/* ============================================================
+   admin.css — NexusDesk Admin Dashboard
+   Live, data-dense, professional dark ops theme
+   ============================================================ */
+
+/* ── Admin sidebar accent ── */
+.sidebar.admin .logo-mark { background:linear-gradient(135deg,var(--amber),var(--rose)); }
+.sidebar.admin .nav-item.active { background:rgba(245,158,11,.1); color:var(--amber); box-shadow:inset 2px 0 0 var(--amber); }
+.sidebar.admin .nav-item:hover { background:rgba(245,158,11,.05); }
+.sidebar.admin .nav-badge { background:var(--amber); color:#000; }
+.admin-chip {
+  display:inline-block; padding:2px 8px;
+  background:rgba(245,158,11,.15); color:var(--amber);
+  border-radius:100px; font-size:9px; font-weight:700;
+  margin-left:6px; font-family:'Fira Code',monospace; letter-spacing:1px;
+}
+
+/* ── Live ticker strip (topbar) ── */
+.live-ticker {
+  display:flex; align-items:center; gap:6px;
+  font-family:'Fira Code',monospace; font-size:11px; color:var(--teal);
+  padding:5px 12px; border:1px solid rgba(20,184,166,.2);
+  border-radius:100px; background:rgba(20,184,166,.06);
+}
+.live-ticker-dot { width:6px; height:6px; border-radius:50%; background:var(--teal); animation:dbPulse 1.5s infinite; }
+
+/* ── KPI Grid ── */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.kpi {
+  padding:22px; border:1px solid var(--border);
+  border-radius:14px; background:var(--surface);
+  position:relative; overflow:hidden; transition:border-color .2s;
+}
+.kpi:hover { border-color:var(--border2); }
+.kpi::after {
+  content:''; position:absolute; top:0; right:0;
+  width:100px; height:100px; border-radius:50%;
+  filter:blur(50px); opacity:.15; pointer-events:none;
+}
+.kpi.teal::after   { background:var(--teal); }
+.kpi.amber::after  { background:var(--amber); }
+.kpi.green::after  { background:var(--success); }
+.kpi.rose::after   { background:var(--rose); }
+
+.kpi-icon { font-size:22px; margin-bottom:14px; }
+.kpi-label { font-size:10px; color:var(--muted); font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+.kpi-num { font-size:36px; font-weight:900; letter-spacing:-1.5px; font-family:'Fira Code',monospace; }
+.kpi-sub { font-size:11px; color:var(--muted); margin-top:6px; }
+.kpi-trend {
+  display:inline-flex; align-items:center; gap:4px; margin-top:10px;
+  padding:3px 8px; border-radius:100px; font-size:11px; font-weight:700;
+}
+.trend-up   { background:rgba(16,185,129,.1); color:var(--success); }
+.trend-down { background:rgba(244,63,94,.1);  color:var(--danger); }
+
+/* ── Resolution ring ── */
+.ring-card {
+  padding:24px; border:1px solid var(--border); border-radius:14px;
+  background:var(--surface); display:flex; align-items:center; gap:28px;
+}
+.ring-wrap  { position:relative; width:110px; height:110px; flex-shrink:0; }
+.ring-center {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+.ring-pct { font-size:22px; font-weight:900; font-family:'Fira Code',monospace; }
+.ring-lbl { font-size:10px; color:var(--muted); margin-top:2px; }
+.ring-stats { display:flex; gap:18px; margin-top:12px; }
+.rs         { text-align:center; }
+.rs-num     { font-size:18px; font-weight:900; font-family:'Fira Code',monospace; }
+.rs-label   { font-size:10px; color:var(--muted); }
+
+/* ── Charts grid ── */
+.charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+.chart-card {
+  padding:22px; border:1px solid var(--border);
+  border-radius:14px; background:var(--surface);
+}
+.chart-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+.chart-title  { font-size:14px; font-weight:700; }
+.chart-sub    { font-size:11px; color:var(--muted); margin-top:3px; font-family:'Fira Code',monospace; }
+.chart-badge  { padding:3px 10px; border-radius:100px; font-size:10px; font-weight:700; flex-shrink:0; }
+
+/* ── DB Performance cards ── */
+.db-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+.db-card { padding:22px; border:1px solid var(--border); border-radius:14px; background:var(--surface); }
+.db-header  { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.db-icon    { width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.db-name    { font-size:15px; font-weight:800; }
+.db-version { font-size:11px; color:var(--muted); font-family:'Fira Code',monospace; }
+.db-online  { margin-left:auto; padding:3px 10px; border-radius:100px; font-size:10px; font-weight:700; background:rgba(16,185,129,.12); color:var(--success); border:1px solid rgba(16,185,129,.2); }
+.db-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+.db-metric  { padding:12px; border-radius:9px; background:rgba(255,255,255,.02); border:1px solid var(--border); }
+.db-metric-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
+.db-metric-value { font-size:17px; font-weight:900; font-family:'Fira Code',monospace; }
+.db-metric-unit  { font-size:10px; color:var(--muted); }
+
+/* ── Section title ── */
+.section-title-admin {
+  font-size:16px; font-weight:800; letter-spacing:-.3px; margin-bottom:18px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-title-admin::before { content:''; width:3px; height:18px; background:var(--amber); border-radius:2px; }
+
+/* ── Tickets table ── */
+.table-card { padding:22px; border:1px solid var(--border); border-radius:14px; background:var(--surface); margin-bottom:24px; }
+.table-toolbar {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
+}
+.table-actions { display:flex; gap:10px; align-items:center; }
+.search-wrap { position:relative; }
+.search-wrap::before { content:'⌕'; position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:15px; pointer-events:none; color:var(--muted); }
+.search-input {
+  padding:8px 14px 8px 32px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; color:var(--text); font-family:'Inter',sans-serif;
+  font-size:13px; outline:none; width:220px; transition:border-color .2s;
+}
+.search-input:focus { border-color:var(--teal); }
+.filter-select {
+  padding:8px 12px; background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; color:var(--text); font-family:'Inter',sans-serif; font-size:13px; outline:none; cursor:pointer;
+}
+
+table.admin-table { width:100%; border-collapse:collapse; }
+.admin-table th {
+  font-size:10px; font-weight:700; color:var(--muted);
+  text-transform:uppercase; letter-spacing:1px;
+  padding:0 14px 12px; border-bottom:1px solid var(--border); text-align:left;
+  font-family:'Fira Code',monospace;
+}
+.admin-table td { padding:14px; border-bottom:1px solid rgba(30,42,64,.5); font-size:13px; vertical-align:middle; }
+.admin-table tr:last-child td { border-bottom:none; }
+.admin-table tr:hover td { background:rgba(20,184,166,.02); }
+.t-id-cell    { font-family:'Fira Code',monospace; font-size:11px; color:var(--teal); }
+.t-title-cell { font-weight:600; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.btn-action {
+  padding:6px 12px; border-radius:6px; border:1px solid var(--border);
+  background:transparent; color:var(--text2);
+  font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
+  cursor:pointer; transition:all .2s; margin-right:4px;
+}
+.btn-action:hover { border-color:var(--teal); color:var(--teal); background:rgba(20,184,166,.07); }
+.btn-resolve { border-color:rgba(16,185,129,.25); color:var(--success); }
+.btn-resolve:hover { background:rgba(16,185,129,.08); }
+
+/* ── Seed btn ── */
+.btn-seed {
+  background:linear-gradient(135deg,var(--violet),var(--teal));
+  color:#fff; border:none; padding:7px 16px; border-radius:8px;
+  font-size:12px; font-weight:700; cursor:pointer; transition:all .2s;
+  font-family:'Inter',sans-serif; display:inline-flex; align-items:center; gap:6px;
+  box-shadow:0 4px 14px rgba(124,58,237,.25);
+}
+.btn-seed:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(124,58,237,.35); }
+
+/* ── Responsive ── */
+@media (max-width:1200px) {
+  .kpi-grid    { grid-template-columns:repeat(2,1fr); }
+  .charts-grid { grid-template-columns:1fr; }
+  .db-grid     { grid-template-columns:1fr; }
+}
+@media (max-width:768px) {
+  .kpi-grid { grid-template-columns:1fr; }
+  .admin-table th:nth-child(3), .admin-table td:nth-child(3) { display:none; }
+}
+
+/* Export buttons and dropdown Control */
+.export-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-export {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  text-decoration: none;
+  border: none;
+}
+
+.btn-export-all {
+  background: linear-gradient(135deg, #0d9488, #0891b2);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(13,148,136,.30);
+}
+.btn-export-all:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(13,148,136,.40);
+}
+
+.btn-export-filter {
+  background: rgba(13,148,136,.10);
+  color: var(--teal);
+  border: 1px solid rgba(13,148,136,.30);
+}
+.btn-export-filter:hover {
+  background: rgba(13,148,136,.18);
+}
+
+/* Dropdown */
+.export-dropdown {
+  position: relative;
+}
+.export-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.35);
+  z-index: 999;
+  padding: 6px 0;
+  overflow: hidden;
+}
+.export-menu.open { display: block; }
+
+.export-menu-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 14px 4px;
+}
+.export-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+.export-menu-item {
+  display: block;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.export-menu-item:hover {
+  background: rgba(13,148,136,.10);
+  color: var(--teal);
+}
+
+/* Per-row export button */
+.btn-export-row {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(13,148,136,.30);
+  background: transparent;
+  color: var(--teal);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  margin-right: 4px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.btn-export-row:hover {
+  background: rgba(13,148,136,.10);
+  border-color: var(--teal);
+}
+
+/* Resolution time cell */
+.t-res-cell { font-size: 11px; white-space: nowrap; }
+.res-time    { color: var(--success); font-family: 'Fira Code', monospace; }
+.res-pending { color: var(--muted);   font-style: italic; }

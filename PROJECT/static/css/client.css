@@ -1,0 +1,150 @@
+/* ============================================================
+   client.css — NexusDesk Client Portal
+   Lively, welcoming, teal-forward design
+   ============================================================ */
+
+/* ── Welcome banner ── */
+.welcome-banner {
+  padding:22px 28px; border-radius:16px; margin-bottom:24px;
+  background:linear-gradient(135deg,rgba(20,184,166,.12),rgba(245,158,11,.06));
+  border:1px solid rgba(20,184,166,.2);
+  display:flex; align-items:center; justify-content:space-between; gap:20px;
+}
+.wb-left h2 { font-size:22px; font-weight:900; letter-spacing:-.5px; margin-bottom:4px; }
+.wb-left h2 span { color:var(--teal); }
+.wb-left p  { font-size:14px; color:var(--text2); }
+.wb-actions { display:flex; gap:10px; flex-shrink:0; }
+
+/* ── KPI Cards ── */
+.summary-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.kpi-card {
+  padding:20px; border:1px solid var(--border); border-radius:14px;
+  background:var(--surface); position:relative; overflow:hidden;
+  transition:border-color .2s, transform .2s;
+}
+.kpi-card:hover { border-color:var(--border2); transform:translateY(-2px); }
+.kpi-card::before {
+  content:''; position:absolute; top:-30px; right:-30px;
+  width:80px; height:80px; border-radius:50%; filter:blur(30px); opacity:.2;
+}
+.kpi-card.c-teal::before   { background:var(--teal); }
+.kpi-card.c-amber::before  { background:var(--amber); }
+.kpi-card.c-green::before  { background:var(--success); }
+.kpi-card.c-violet::before { background:var(--violet); }
+
+.kpi-card-icon  { font-size:20px; margin-bottom:12px; }
+.kpi-card-label { font-size:10px; color:var(--muted); font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+.kpi-card-num   { font-size:30px; font-weight:900; letter-spacing:-1px; font-family:'Fira Code',monospace; }
+.kpi-card-trend { font-size:11px; color:var(--muted); margin-top:6px; }
+
+/* ── Section header ── */
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.section-header h2 { font-size:17px; font-weight:800; letter-spacing:-.3px; display:flex; align-items:center; gap:10px; }
+.section-header h2::before { content:''; width:3px; height:18px; background:var(--teal); border-radius:2px; }
+.filters { display:flex; gap:6px; }
+.filter-btn {
+  padding:6px 14px; border-radius:6px; border:1px solid var(--border);
+  background:transparent; color:var(--muted);
+  font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
+  cursor:pointer; transition:all .2s;
+}
+.filter-btn.active, .filter-btn:hover {
+  border-color:var(--teal); color:var(--teal); background:rgba(20,184,166,.08);
+}
+
+/* ── Raise Ticket button ── */
+.btn-raise {
+  display:flex; align-items:center; gap:8px; padding:9px 18px;
+  background:linear-gradient(135deg,var(--teal),#0891b2);
+  border:none; border-radius:8px; color:#fff;
+  font-family:'Inter',sans-serif; font-size:13px; font-weight:700;
+  cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(20,184,166,.3);
+}
+.btn-raise:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(20,184,166,.45); }
+
+/* ── Ticket accordion ── */
+.ticket-accordion { display:flex; flex-direction:column; gap:10px; }
+.ticket-item {
+  border:1px solid var(--border); border-radius:14px;
+  background:var(--surface); overflow:hidden; transition:all .2s;
+}
+.ticket-item:hover { border-color:rgba(20,184,166,.25); }
+.ticket-item.expanded { border-color:rgba(20,184,166,.35); box-shadow:0 4px 20px rgba(20,184,166,.08); }
+
+.ticket-head {
+  padding:16px 20px; display:flex; align-items:center; gap:14px;
+  cursor:pointer; transition:background .2s;
+}
+.ticket-head:hover { background:rgba(20,184,166,.03); }
+.ticket-id {
+  font-family:'Fira Code',monospace; font-size:11px; color:var(--teal);
+  width:80px; flex-shrink:0; font-weight:600;
+}
+.ticket-info { flex:1; min-width:0; }
+.ticket-title { font-size:14px; font-weight:700; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ticket-meta  { font-size:11px; color:var(--muted); }
+.chevron { color:var(--muted); font-size:11px; transition:transform .3s; flex-shrink:0; }
+.ticket-item.expanded .chevron { transform:rotate(180deg); color:var(--teal); }
+
+.ticket-body {
+  display:none; padding:0 20px 18px;
+  border-top:1px solid var(--border);
+  animation:expandDown .22s ease;
+}
+.ticket-item.expanded .ticket-body { display:block; }
+@keyframes expandDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+
+.ticket-detail-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; padding:16px 0; }
+.detail-item .d-label { font-size:10px; color:var(--muted); font-weight:600; margin-bottom:4px; text-transform:uppercase; letter-spacing:.5px; font-family:'Fira Code',monospace; }
+.detail-item .d-value { font-size:13px; font-weight:600; }
+
+.ticket-desc-label { font-size:10px; color:var(--muted); font-weight:600; margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+.ticket-desc { font-size:13px; color:var(--text2); line-height:1.7; padding-top:6px; border-top:1px solid var(--border); }
+.admin-response {
+  margin-top:14px; padding:14px; border-radius:10px;
+  background:rgba(16,185,129,.06); border:1px solid rgba(16,185,129,.2);
+}
+.admin-response-label { font-size:10px; font-weight:700; color:var(--success); margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.admin-response p     { font-size:13px; color:var(--text); line-height:1.6; }
+
+/* ── Priority selector ── */
+.priority-select { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.priority-btn {
+  padding:10px 6px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface2); color:var(--muted);
+  font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
+  cursor:pointer; text-align:center; transition:all .2s;
+}
+.priority-btn .pb-icon { display:block; font-size:16px; margin-bottom:4px; }
+.priority-btn[data-p="low"].active      { border-color:var(--success); color:var(--success); background:rgba(16,185,129,.1); }
+.priority-btn[data-p="medium"].active   { border-color:var(--sky);     color:var(--sky);     background:rgba(56,189,248,.1); }
+.priority-btn[data-p="high"].active     { border-color:var(--warning); color:var(--warning); background:rgba(245,158,11,.1); }
+.priority-btn[data-p="critical"].active { border-color:var(--danger);  color:var(--danger);  background:rgba(244,63,94,.1); }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align:center; padding:70px 40px;
+  border:1px dashed rgba(20,184,166,.2); border-radius:16px;
+  background:rgba(20,184,166,.02);
+}
+.empty-state .es-icon { font-size:48px; margin-bottom:16px; }
+.empty-state h3 { font-size:18px; font-weight:700; margin-bottom:8px; }
+.empty-state p  { font-size:14px; color:var(--text2); max-width:320px; margin:0 auto 24px; line-height:1.6; }
+
+/* ── Timeline dots on ticket items ── */
+.ticket-timeline { display:flex; align-items:center; gap:4px; margin-top:12px; }
+.tl-step { width:24px; height:4px; border-radius:2px; background:var(--border); }
+.tl-step.done { background:var(--teal); }
+.tl-step.active { background:var(--amber); }
+.tl-label { font-size:10px; color:var(--muted); margin-left:8px; font-family:'Fira Code',monospace; }
+
+/* ── Responsive ── */
+@media (max-width:900px) {
+  .summary-cards      { grid-template-columns:repeat(2,1fr); }
+  .ticket-detail-grid { grid-template-columns:repeat(2,1fr); }
+  .welcome-banner     { flex-direction:column; }
+}
+@media (max-width:600px) {
+  .summary-cards  { grid-template-columns:1fr; }
+  .priority-select { grid-template-columns:repeat(2,1fr); }
+}

@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% block title %}My Tickets — NexusDesk{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/client.css') }}">{% endblock %}
+{% block header %}{% endblock %}
+{% block background %}{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+
+  {# ══ SIDEBAR ════════════════════════════════════════════ #}
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark" style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--amber));display:flex;align-items:center;justify-content:center;font-size:16px">⬡</div>
+      <span style="font-size:17px;font-weight:900;letter-spacing:-.5px">Nexus<span style="color:var(--teal)">Desk</span></span>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-label">// main</div>
+      <a href="{{ url_for('client.tickets') }}" class="nav-item {{ 'active' if active_nav == 'tickets' }}">
+        <span class="nav-icon">📋</span> My Tickets
+        {% if open_count %}<span class="nav-badge">{{ open_count }}</span>{% endif %}
+      </a>
+      <a href="{{ url_for('client.client_notification') }}" class="nav-item {{ 'active' if active_nav == 'notifications' }}">
+        <span class="nav-icon">🔔</span> Notifications
+      </a>
+
+      <div class="nav-section-label">// account</div>
+      <a href="{{ url_for('client.client_profile') }}" class="nav-item {{ 'active' if active_nav == 'profile' }}">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+      <a href="{{ url_for('client.client_settings') }}" class="nav-item {{ 'active' if active_nav == 'settings' }}">
+        <span class="nav-icon">⚙</span> Settings
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-avatar">{{ current_user.first_name[0] }}{{ current_user.last_name[0] }}</div>
+      <div style="flex:1;min-width:0">
+        <div class="user-name">{{ current_user.first_name }} {{ current_user.last_name }}</div>
+        <div class="user-role">{{ current_user.company or 'Client' }}</div>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="logout-btn" title="Logout">⇥</a>
+    </div>
+  </nav>
+
+  {# ══ MAIN ════════════════════════════════════════════════ #}
+  <main class="app-main">
+
+    <div class="app-topbar">
+      <div>
+        <div class="app-topbar-title">My Tickets</div>
+        <div class="app-topbar-sub">{{ current_user.company or 'Client Portal' }} · NexusDesk</div>
+      </div>
+      <div class="db-status"><span class="db-dot"></span> Connected</div>
+    </div>
+
+    <div class="app-content">
+
+      {# ── Welcome banner ── #}
+      <div class="welcome-banner">
+        <div class="wb-left">
+          <h2>Hey, <span>{{ current_user.first_name }}</span> 👋</h2>
+          <p>Track your support tickets, see admin responses, and raise new issues — all in one place.</p>
+        </div>
+        <div class="wb-actions">
+          <button class="btn-raise" onclick="openModal()">+ Raise New Ticket</button>
+        </div>
+      </div>
+
+      {# ── KPI Cards ── #}
+      <div class="summary-cards">
+        <div class="kpi-card c-teal">
+          <div class="kpi-card-icon">📋</div>
+          <div class="kpi-card-label">Total Raised</div>
+          <div class="kpi-card-num" style="color:var(--teal)">{{ total_tickets }}</div>
+          <div class="kpi-card-trend">All time</div>
+        </div>
+        <div class="kpi-card c-amber">
+          <div class="kpi-card-icon">⏳</div>
+          <div class="kpi-card-label">Open</div>
+          <div class="kpi-card-num" style="color:var(--amber)">{{ open_tickets }}</div>
+          <div class="kpi-card-trend">Awaiting response</div>
+        </div>
+        <div class="kpi-card c-green">
+          <div class="kpi-card-icon">✅</div>
+          <div class="kpi-card-label">Resolved</div>
+          <div class="kpi-card-num" style="color:var(--success)">{{ resolved_tickets }}</div>
+          <div class="kpi-card-trend">Closed successfully</div>
+        </div>
+        <div class="kpi-card c-violet">
+          <div class="kpi-card-icon">⚡</div>
+          <div class="kpi-card-label">Avg Response</div>
+          <div class="kpi-card-num" style="color:var(--violet)">{{ avg_response }}</div>
+          <div class="kpi-card-trend">Resolution time</div>
+        </div>
+      </div>
+
+      {# ── Ticket list ── #}
+      <div class="section-header">
+        <h2>Ticket History</h2>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div class="filters">
+            <button class="filter-btn active" onclick="filterTickets('all',   this)">All</button>
+            <button class="filter-btn"        onclick="filterTickets('open',  this)">Open</button>
+            <button class="filter-btn"        onclick="filterTickets('inprogress', this)">In Progress</button>
+            <button class="filter-btn"        onclick="filterTickets('resolved',   this)">Resolved</button>
+          </div>
+          <button class="btn-raise" onclick="openModal()">+ New Ticket</button>
+        </div>
+      </div>
+
+      {% if tickets %}
+      <div class="ticket-accordion" id="ticketList">
+        {% for ticket in tickets %}
+        <div class="ticket-item" data-status="{{ ticket.status }}">
+          <div class="ticket-head" onclick="toggleTicket(this.parentElement)">
+            <div class="ticket-id">{{ ticket.ticket_id }}</div>
+            <div class="ticket-info">
+              <div class="ticket-title">{{ ticket.title }}</div>
+              <div class="ticket-meta">{{ ticket.category }} · {{ ticket.environment }} · {{ ticket.created_at | timesince }}</div>
+            </div>
+            <span class="p-badge p-{{ ticket.priority }}" style="margin-right:10px">{{ ticket.priority }}</span>
+            <span class="badge badge-{{ ticket.status }}">{{ ticket.status }}</span>
+            <span class="chevron" style="margin-left:12px">▼</span>
+          </div>
+
+          <div class="ticket-body">
+            <div class="ticket-detail-grid">
+              <div class="detail-item"><div class="d-label">Category</div><div class="d-value">{{ ticket.category }}</div></div>
+              <div class="detail-item"><div class="d-label">Priority</div><div class="d-value">{{ ticket.priority | title }}</div></div>
+              <div class="detail-item"><div class="d-label">Environment</div><div class="d-value">{{ ticket.environment }}</div></div>
+              <div class="detail-item"><div class="d-label">Status</div><div class="d-value">{{ ticket.status | title }}</div></div>
+              <div class="detail-item"><div class="d-label">Assigned To</div><div class="d-value">{{ ticket.assigned_to or '—' }}</div></div>
+              <div class="detail-item"><div class="d-label">Raised</div><div class="d-value">{{ ticket.created_at.strftime('%b %d, %Y') }}</div></div>
+            </div>
+
+            {# Progress timeline #}
+            <div class="ticket-timeline">
+              <div class="tl-step {{ 'done' if ticket.status in ('open','inprogress','resolved','closed') }}"></div>
+              <div class="tl-step {{ 'done' if ticket.status in ('inprogress','resolved','closed') else ('active' if ticket.status == 'open') }}"></div>
+              <div class="tl-step {{ 'done' if ticket.status in ('resolved','closed') else ('active' if ticket.status == 'inprogress') }}"></div>
+              <div class="tl-step {{ 'done' if ticket.status == 'closed' else ('active' if ticket.status == 'resolved') }}"></div>
+              <span class="tl-label">{{ ticket.status | upper }}</span>
+            </div>
+
+            <div class="ticket-desc-label" style="margin-top:14px">Description</div>
+            <div class="ticket-desc">{{ ticket.description }}</div>
+
+            {% if ticket.admin_response %}
+            <div class="admin-response">
+              <div class="admin-response-label">✅ Admin Response</div>
+              <p>{{ ticket.admin_response }}</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="es-icon">⬡</div>
+        <h3>No tickets yet</h3>
+        <p>When you raise a support ticket it will appear here. Click the button below to get started.</p>
+        <button class="btn-raise" onclick="openModal()">+ Raise Your First Ticket</button>
+      </div>
+      {% endif %}
+
+    </div>
+  </main>
+</div>
+
+{# ══ CREATE TICKET MODAL ══════════════════════════════════════ #}
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Raise New Ticket</h2>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px">Describe your issue clearly for the fastest response</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form method="POST" action="{{ url_for('client.create_ticket') }}" id="ticketForm">
+        {{ ticket_form.csrf_token }}
+
+        <div class="form-group">
+          <label>Issue Title <span class="label-req">*</span></label>
+          {{ ticket_form.title(placeholder='Brief one-line summary of the issue') }}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group">
+            <label>Category <span class="label-req">*</span></label>
+            {{ ticket_form.category() }}
+          </div>
+          <div class="form-group">
+            <label>Environment</label>
+            {{ ticket_form.environment() }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Priority</label>
+          <div class="priority-select">
+            <button type="button" class="priority-btn" data-p="low"      onclick="setPriority('low',this)"><span class="pb-icon">🟢</span>Low</button>
+            <button type="button" class="priority-btn active" data-p="medium"   onclick="setPriority('medium',this)"><span class="pb-icon">🔵</span>Medium</button>
+            <button type="button" class="priority-btn" data-p="high"     onclick="setPriority('high',this)"><span class="pb-icon">🟠</span>High</button>
+            <button type="button" class="priority-btn" data-p="critical" onclick="setPriority('critical',this)"><span class="pb-icon">🔴</span>Critical</button>
+          </div>
+          {{ ticket_form.priority(id='priorityInput', value='medium') }}
+        </div>
+
+        <div class="form-group">
+          <label>Description <span class="label-req">*</span></label>
+          {{ ticket_form.description(rows=4, placeholder='Describe the issue in detail — what happened, what you expected…') }}
+        </div>
+
+        <div class="form-group">
+          <label>Steps to Reproduce</label>
+          {{ ticket_form.steps(rows=3, placeholder='1. Go to…  2. Click…  3. See error…') }}
+        </div>
+
+        <div class="modal-footer" style="padding:0;margin-top:8px">
+          <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn-save">Submit Ticket →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/client.js') }}"></script>
+{% endblock %}

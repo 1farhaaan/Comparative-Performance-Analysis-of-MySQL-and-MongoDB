@@ -1,0 +1,55 @@
+{# ================================================================
+   header.html — Public Top Navigation Bar
+   ================================================================
+   Included by:  index.html  (landing page)
+   Usage:        {% block header %}{% include 'header.html' %}{% endblock %}
+
+   Flask context variables used:
+     current_user  — from Flask-Login (is_authenticated, role)
+   
+   Active link:
+     Pass  active_page = 'features' | 'how' | 'docs'  from your
+     view function, or leave it unset (all links plain).
+   ================================================================ #}
+
+<nav class="topnav">
+
+  {# Logo #}
+  <a href="{{ url_for('main.index') }}" class="logo">
+    <div class="logo-mark">🎯</div>
+    <div class="logo-text">Resolv<span>IQ</span></div>
+  </a>
+
+  {# Nav links #}
+  <div class="nav-links">
+    <a href="{{ url_for('main.index') }}#features"
+       class="{{ 'active-link' if active_page == 'features' }}">
+      Features
+    </a>
+    <a href="{{ url_for('main.index') }}#how"
+       class="{{ 'active-link' if active_page == 'how' }}">
+      How It Works
+    </a>
+    <a href="#"
+       class="{{ 'active-link' if active_page == 'docs' }}">
+      Docs
+    </a>
+  </div>
+
+  {# Auth buttons — aware of login state #}
+  <div class="nav-actions">
+    {% if current_user.is_authenticated %}
+      {# Already logged in: show go-to-dashboard shortcut #}
+      {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('admin.dashboard') }}" class="btn-ghost">Admin Panel</a>
+      {% else %}
+        <a href="{{ url_for('client.tickets') }}" class="btn-ghost">My Dashboard</a>
+      {% endif %}
+      <a href="{{ url_for('auth.logout') }}" class="btn-primary">Sign Out</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}"  class="btn-ghost">Sign In</a>
+      <a href="{{ url_for('auth.signup') }}" class="btn-primary">Create Account</a>
+    {% endif %}
+  </div>
+
+</nav>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {# ── Page title: each child sets {% block title %} ── #}
+  <title>{% block title %}NexusDesk{% endblock %}</title>
+
+  {# ── Google Fonts (shared across all pages) ── #}
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  {# ── Base CSS always loaded ── #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+  {# ── Page-specific CSS — child templates inject their own stylesheet here ── #}
+  {% block extra_css %}{% endblock %}
+
+  {# ── Any extra <head> tags (e.g. Chart.js CDN for admin page) ── #}
+  {% block head_scripts %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+  {# ── Ambient animated background (public & auth pages only)
+       App pages override this block and set it empty ── #}
+  {% block background %}
+    <div class="bg-grid"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+  {% endblock %}
+
+  {# ── Flash messages — visible on every page ── #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="position:fixed;top:80px;right:24px;z-index:999;
+                  display:flex;flex-direction:column;gap:8px;max-width:380px;">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {# ── Navigation / Header
+       Public pages:  {% block header %}{% include 'header.html' %}{% endblock %}
+       Auth pages:    leave block empty (no nav)
+       App pages:     sidebar lives inside {% block content %} ── #}
+  {% block header %}{% endblock %}
+
+  {# ── Main page content ── #}
+  {% block content %}{% endblock %}
+
+  {# ── Footer ── #}
+  {% block footer %}{% endblock %}
+
+  {# ── Page-specific JS — child templates inject their own tags here ── #}
+  {% block extra_js %}{% endblock %}
+
+</body>
+</html>

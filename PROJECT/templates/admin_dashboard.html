@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% block title %}Command Centre — NexusDesk{% endblock %}
+{% block head_scripts %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+{% block header %}{% endblock %}
+{% block background %}{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+
+  {# ══ SIDEBAR ══════════════════════════════════════════════ #}
+  <nav class="sidebar admin">
+    <div class="sidebar-logo">
+      <div class="logo-mark" style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--amber),var(--rose));display:flex;align-items:center;justify-content:center;font-size:17px">⬡</div>
+      <span style="font-size:17px;font-weight:900;letter-spacing:-.5px">Nexus<span style="color:var(--amber)">Desk</span><span class="admin-chip">OPS</span></span>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-label">// overview</div>
+      <a href="{{ url_for('admin.dashboard') }}" class="nav-item {{ 'active' if active_nav == 'dashboard' }}">
+        <span class="nav-icon">⬡</span> Command Centre
+      </a>
+      <a href="{{ url_for('admin.admin_tickets') }}" class="nav-item {{ 'active' if active_nav == 'tickets' }}">
+        <span class="nav-icon">📋</span> All Tickets
+        {% if open_count %}<span class="nav-badge danger">{{ open_count }}</span>{% endif %}
+      </a>
+      <a href="{{ url_for('admin.admin_client') }}" class="nav-item">
+        <span class="nav-icon">👥</span> Clients
+      </a>
+
+      <div class="nav-section-label">// analytics</div>
+      <a href="{{ url_for('admin.admin_reports') }}" class="nav-item">
+        <span class="nav-icon">📈</span> Reports
+      </a>
+      <a href="{{ url_for('admin.db_monitor') }}" class="nav-item">
+        <span class="nav-icon">🗄</span> DB Monitor
+      </a>
+
+      <div class="nav-section-label">// system</div>
+      <a href="{{ url_for('admin.config') }}" class="nav-item">
+        <span class="nav-icon">⚙</span> Configuration
+      </a>
+      <a href="{{ url_for('admin.admin_logs') }}" class="nav-item">
+        <span class="nav-icon">🔐</span> Security Logs
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-avatar" style="background:linear-gradient(135deg,var(--amber),var(--rose))">
+        {{ current_user.first_name[0] }}{{ current_user.last_name[0] }}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="user-name">{{ current_user.first_name }} {{ current_user.last_name }}</div>
+        <div class="user-role" style="color:var(--amber)">Super Admin</div>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="logout-btn" title="Logout">⇥</a>
+    </div>
+  </nav>
+
+  {# ══ MAIN CONTENT ════════════════════════════════════════ #}
+  <main class="app-main">
+
+    {# Topbar #}
+    <div class="app-topbar">
+      <div>
+        <div class="app-topbar-title">Command Centre</div>
+        <div class="app-topbar-sub" style="font-family:'Fira Code',monospace">{{ now.strftime('%Y-%m-%d %H:%M UTC') }} · NexusDesk Operations</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <a href="/admin/seed"
+           class="btn-seed"
+           onclick="return confirm('Seed 1000 realistic tickets + 500 performance log entries?')">
+          ⚡ Seed 1000 Tickets
+        </a>
+        <div class="db-status"><span class="db-dot"></span> MongoDB</div>
+        <div class="db-status"><span class="db-dot"></span> MySQL</div>
+        <div class="live-ticker"><span class="live-ticker-dot"></span> LIVE</div>
+      </div>
+    </div>
+
+    <div class="app-content">
+
+      {# ── KPI Cards ── #}
+      <div class="kpi-grid">
+        <div class="kpi teal">
+          <div class="kpi-icon">📋</div>
+          <div class="kpi-label">Total Tickets</div>
+          <div class="kpi-num" style="color:var(--teal)">{{ total_tickets }}</div>
+          <div class="kpi-sub">All time · both DBs</div>
+          <div class="kpi-trend trend-up">↑ running</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-icon">⏳</div>
+          <div class="kpi-label">Open Queue</div>
+          <div class="kpi-num" style="color:var(--amber)">{{ open_tickets }}</div>
+          <div class="kpi-sub">Needs attention</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-label">Resolved</div>
+          <div class="kpi-num" style="color:var(--success)">{{ resolved_tickets }}</div>
+          <div class="kpi-sub">Closed successfully</div>
+          <div class="kpi-trend trend-up">↑ {{ resolution_rate }}% rate</div>
+        </div>
+        <div class="kpi rose">
+          <div class="kpi-icon">⚡</div>
+          <div class="kpi-label">Avg Response</div>
+          <div class="kpi-num" style="color:var(--rose)">{% if avg_response_hours is not none %}{{ avg_response_hours }}h{% else %}—{% endif %}</div>
+          <div class="kpi-sub">Resolved tickets</div>
+        </div>
+      </div>
+
+      {# ── Resolution ring + Priority ── #}
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:24px">
+        <div class="ring-card" style="flex-direction:column;align-items:flex-start">
+          <div style="font-size:13px;font-weight:700;margin-bottom:18px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;font-family:'Fira Code',monospace">Resolution Rate</div>
+          <div style="display:flex;align-items:center;gap:24px;width:100%">
+            <div class="ring-wrap">
+              <canvas id="ringChart" width="110" height="110"
+                data-resolved="{{ resolved_tickets }}"
+                data-open="{{ open_tickets }}"
+                data-inprogress="{{ inprogress_tickets }}"></canvas>
+              <div class="ring-center">
+                <div class="ring-pct" style="color:var(--teal)">{{ resolution_rate }}%</div>
+                <div class="ring-lbl">resolved</div>
+              </div>
+            </div>
+            <div>
+              <div class="ring-stats">
+                <div class="rs"><div class="rs-num" style="color:var(--success)">{{ resolved_tickets }}</div><div class="rs-label">Resolved</div></div>
+                <div class="rs"><div class="rs-num" style="color:var(--amber)">{{ open_tickets }}</div><div class="rs-label">Open</div></div>
+                <div class="rs"><div class="rs-num" style="color:var(--teal)">{{ inprogress_tickets }}</div><div class="rs-label">In Progress</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Priority Breakdown</div>
+              <div class="chart-sub">ticket distribution by urgency</div>
+            </div>
+            <div class="chart-badge" style="background:rgba(20,184,166,.1);color:var(--teal)">Live</div>
+          </div>
+          <canvas id="priorityChart" height="90"
+            data-labels='["Low","Medium","High","Critical"]'
+            data-values="{{ priority_data | tojson }}"></canvas>
+        </div>
+      </div>
+
+      {# ── Charts grid ── #}
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Weekly Ticket Volume</div>
+              <div class="chart-sub">Cumulative resolved (teal) vs open backlog (amber)</div>
+            </div>
+          </div>
+          <canvas id="weeklyChart" height="140"
+            data-labels="{{ weekly_labels | tojson }}"
+            data-raised="{{ weekly_raised | tojson }}"
+            data-resolved="{{ weekly_resolved | tojson }}"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Category Distribution</div>
+              <div class="chart-sub">tickets by support category</div>
+            </div>
+          </div>
+          <canvas id="categoryChart" height="140"
+            data-labels="{{ category_labels | tojson }}"
+            data-values="{{ category_data | tojson }}"></canvas>
+        </div>
+      </div>
+
+      {# ── DB Performance ── #}
+      <div class="section-title-admin">Database Performance</div>
+      <div class="db-grid">
+
+        {# MongoDB card #}
+        <div class="db-card">
+          <div class="db-header">
+            <div class="db-icon" style="background:rgba(16,185,129,.1)">🍃</div>
+            <div>
+              <div class="db-name">MongoDB</div>
+              <div class="db-version">v6.0 · Document Store</div>
+            </div>
+            <div class="db-online">● Online</div>
+          </div>
+          <div class="db-metrics">
+            <div class="db-metric">
+              <div class="db-metric-label">Total Inserts</div>
+              <div class="db-metric-value" style="color:var(--teal)">{{ mongo_stats.total_inserts }}</div>
+            </div>
+            <div class="db-metric">
+              <div class="db-metric-label">Avg Insert</div>
+              <div class="db-metric-value" style="color:var(--success)">{{ mongo_stats.avg_insert_ms }}<span class="db-metric-unit"> ms</span></div>
+            </div>
+            <div class="db-metric">
+              <div class="db-metric-label">Avg Query</div>
+              <div class="db-metric-value" style="color:var(--sky)">{{ mongo_stats.avg_query_ms }}<span class="db-metric-unit"> ms</span></div>
+            </div>
+          </div>
+          <canvas id="mongoChart" height="70"
+            data-labels="{{ weekly_labels | tojson }}"
+            data-mongo="{{ mongo_insert_times | tojson }}"
+            data-mysql="{{ mysql_insert_times | tojson }}"></canvas>
+        </div>
+
+        {# MySQL card #}
+        <div class="db-card">
+          <div class="db-header">
+            <div class="db-icon" style="background:rgba(56,189,248,.1)">🐬</div>
+            <div>
+              <div class="db-name">MySQL</div>
+              <div class="db-version">v8.0 · Relational</div>
+            </div>
+            <div class="db-online">● Online</div>
+          </div>
+          <div class="db-metrics">
+            <div class="db-metric">
+              <div class="db-metric-label">Total Rows</div>
+              <div class="db-metric-value" style="color:var(--sky)">{{ mysql_stats.total_rows }}</div>
+            </div>
+            <div class="db-metric">
+              <div class="db-metric-label">Avg Insert</div>
+              <div class="db-metric-value" style="color:var(--amber)">{{ mysql_stats.avg_insert_ms }}<span class="db-metric-unit"> ms</span></div>
+            </div>
+            <div class="db-metric">
+              <div class="db-metric-label">Avg Query</div>
+              <div class="db-metric-value" style="color:var(--violet)">{{ mysql_stats.avg_query_ms }}<span class="db-metric-unit"> ms</span></div>
+            </div>
+          </div>
+          <canvas id="mysqlChart" height="70" style="display:none"></canvas>
+          <canvas id="dbCompareChart" height="200" style="max-height:220px"
+            data-labels='["Insert Speed","Throughput","JOIN Speed","Aggregation","Schema Flex","ACID"]'
+            data-mongo='[82, 91, 44, 68, 95, 40]'
+            data-mysql='[55, 70, 95, 72, 30, 98]'></canvas>
+        </div>
+      </div>
+
+      {# ── Tickets Table ── #}
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="section-title-admin" style="margin-bottom:0">All Tickets</div>
+          <div class="table-actions">
+            <div class="search-wrap">
+              <input class="search-input" placeholder="Search tickets…" oninput="searchTickets(this.value)">
+            </div>
+            <select class="filter-select" onchange="filterByStatus(this.value)">
+              <option value="">All Status</option>
+              <option value="open">Open</option>
+              <option value="inprogress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+
+            <div class="export-group">
+              <button class="btn-export btn-export-all" onclick="exportAllTickets()"
+                      title="Export all visible tickets to CSV">
+                ⬇ Export All CSV
+              </button>
+              <div class="export-dropdown">
+                <button class="btn-export btn-export-filter" onclick="toggleExportMenu(event)"
+                        title="Export with filters">
+                  ⬇ Export Filtered ▾
+                </button>
+                <div class="export-menu" id="exportMenu">
+                  <div class="export-menu-label">Export by Status</div>
+                  <a class="export-menu-item" href="{{ url_for('admin.export_all_tickets', status='open') }}">Open Tickets</a>
+                  <a class="export-menu-item" href="{{ url_for('admin.export_all_tickets', status='inprogress') }}">In Progress</a>
+                  <a class="export-menu-item" href="{{ url_for('admin.export_all_tickets', status='resolved') }}">Resolved</a>
+                  <div class="export-menu-divider"></div>
+                  <div class="export-menu-label">Export by Priority</div>
+                  <a class="export-menu-item" href="{{ url_for('admin.export_all_tickets', priority='critical') }}">Critical</a>
+                  <a class="export-menu-item" href="{{ url_for('admin.export_all_tickets', priority='high') }}">High Priority</a>
+                  <a class="export-menu-item" href="{{ url_for('admin.export_all_tickets', priority='medium') }}">Medium Priority</a>
+                  <a class="export-menu-item" href="{{ url_for('admin.export_all_tickets', priority='low') }}">Low Priority</a>
+                </div>
+              </div>
+            </div>
+        </div>
+        </div>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Title</th><th>Client</th>
+              <th>Priority</th><th>Status</th><th>Submitted</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ticketsBody">
+            {% for ticket in all_tickets %}
+            <tr>
+              <td class="t-id-cell">{{ ticket.ticket_id }}</td>
+              <td class="t-title-cell">{{ ticket.title }}</td>
+              <td>{{ ticket.user.first_name }} {{ ticket.user.last_name }}</td>
+              <td><span class="p-badge p-{{ ticket.priority | lower }}">{{ ticket.priority }}</span></td>
+              <td><span class="badge badge-{{ ticket.status | lower | replace(' ','') }}">{{ ticket.status }}</span></td>
+              <td style="font-family:'Fira Code',monospace;font-size:11px;color:var(--muted)">{{ ticket.created_at.strftime('%b %d, %H:%M') }}</td>
+              <td>
+                <button class="btn-action" onclick="openUpdateModal('{{ ticket.ticket_id }}','{{ ticket.status }}')">✏ Update</button>
+                {% if ticket.status != 'resolved' %}
+                <button class="btn-action btn-resolve" onclick="resolveTicket(this)">✓ Resolve</button>
+                {% endif %}
+                <a class="btn-action btn-export-row"
+                   href="{{ url_for('admin.export_single_ticket', ticket_id=ticket.ticket_id) }}"
+                   title="Download this ticket's full report as CSV">⬇ CSV</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+{# ══ UPDATE TICKET MODAL ══════════════════════════════════════ #}
+<div class="modal-overlay" id="updateOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Update Ticket</h2>
+        <p id="updateTidLabel" style="font-size:12px;color:var(--teal);margin-top:4px;font-family:'Fira Code',monospace"></p>
+      </div>
+      <button class="modal-close" onclick="closeUpdateModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="updateForm" method="POST" action="{{ url_for('admin.update_ticket') }}">
+        {{ update_form.csrf_token }}
+        {{ update_form.ticket_id(id='updateTicketId') }}
+
+        <div class="form-group">
+          <label>Update Status</label>
+          {{ update_form.status(id='updateStatus') }}
+        </div>
+        <div class="form-group">
+          <label>Assign To</label>
+          {{ update_form.assigned_to() }}
+        </div>
+        <div class="form-group">
+          <label>Admin Response</label>
+          {{ update_form.admin_response(rows=4, id='adminResponse', placeholder='Describe the fix or request more info…') }}
+        </div>
+        <div class="form-group">
+          <label>Internal Notes <span style="font-size:10px;color:var(--muted)">(not visible to client)</span></label>
+          {{ update_form.internal_notes(rows=2, placeholder='Internal team notes…') }}
+        </div>
+
+        <div class="modal-footer" style="padding:0;margin-top:8px">
+          <button type="button" class="btn-cancel" onclick="closeUpdateModal()">Cancel</button>
+          <button type="submit" class="btn-save">Save Update →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  var updateTicketUrl = "{{ url_for('admin.update_ticket') }}";
+  var exportAllUrl = "{{ url_for('admin.export_all_tickets') }}";
+</script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

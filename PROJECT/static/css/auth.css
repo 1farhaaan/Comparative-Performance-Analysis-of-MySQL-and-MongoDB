@@ -1,0 +1,125 @@
+/* ============================================================
+   auth.css — NexusDesk Auth Pages (Login + Signup)
+   ============================================================ */
+
+.auth-body { overflow:hidden; }
+
+.auth-page {
+  display:flex; min-height:100vh; position:relative; z-index:1;
+}
+
+/* ── Left panel ── */
+.auth-left {
+  width:440px; flex-shrink:0;
+  background:linear-gradient(160deg,rgba(20,184,166,.08) 0%,rgba(6,8,16,1) 60%);
+  border-right:1px solid var(--border);
+  padding:36px 40px; display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+}
+.auth-left::before {
+  content:''; position:absolute; top:-100px; left:-100px;
+  width:350px; height:350px; border-radius:50%;
+  background:var(--teal); filter:blur(120px); opacity:.05;
+}
+.auth-left.amber-tint::before { background:var(--amber); }
+
+.auth-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.auth-logo-mark {
+  width:38px; height:38px; border-radius:11px;
+  background:linear-gradient(135deg,var(--teal),var(--amber));
+  display:flex; align-items:center; justify-content:center; font-size:19px;
+  box-shadow:0 0 20px rgba(20,184,166,.25);
+}
+.auth-logo-text { font-size:21px; font-weight:900; color:var(--text); }
+.auth-logo-text span { color:var(--teal); }
+
+.auth-panel-center { flex:1; display:flex; flex-direction:column; justify-content:center; padding:40px 0; }
+.auth-panel-center h2 { font-size:30px; font-weight:900; letter-spacing:-1px; line-height:1.2; margin-bottom:14px; }
+.auth-panel-center p  { font-size:15px; color:var(--text2); line-height:1.7; }
+
+.auth-perk-list { list-style:none; display:flex; flex-direction:column; gap:14px; }
+.auth-perk-item { display:flex; align-items:flex-start; gap:14px; }
+.perk-icon {
+  width:40px; height:40px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+}
+.auth-perk-item h4 { font-size:14px; font-weight:700; margin-bottom:3px; }
+.auth-perk-item p  { font-size:12px; color:var(--text2); line-height:1.5; }
+
+.testimonial-box {
+  padding:18px; border:1px solid var(--border); border-radius:12px;
+  background:rgba(20,184,166,.04);
+}
+.t-text   { font-size:13px; color:var(--text2); line-height:1.7; margin-bottom:14px; font-style:italic; }
+.t-author { display:flex; align-items:center; gap:10px; }
+.t-avatar {
+  width:32px; height:32px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal),var(--violet));
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;
+}
+.t-name { font-size:13px; font-weight:700; }
+.t-role { font-size:11px; color:var(--muted); }
+
+/* ── Right panel ── */
+.auth-right {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding:40px 32px; overflow-y:auto;
+}
+.auth-right.wide .form-box { max-width:560px; }
+
+.form-box { width:100%; max-width:420px; }
+.form-box-header { margin-bottom:28px; }
+.form-box-header h1 { font-size:28px; font-weight:900; letter-spacing:-.8px; margin-bottom:8px; }
+.form-box-header p  { font-size:14px; color:var(--text2); }
+.form-box-header a  { color:var(--teal); text-decoration:none; font-weight:600; }
+.form-box-header a:hover { text-decoration:underline; }
+
+/* ── Role selector ── */
+.role-select { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.role-btn {
+  padding:10px 16px; border-radius:9px; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface2);
+  color:var(--text2); font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:all .2s;
+}
+.role-btn.active { border-color:var(--teal); color:var(--teal); background:rgba(20,184,166,.1); }
+.rb-icon { font-size:15px; }
+
+/* ── Input with icon ── */
+.input-wrap { position:relative; }
+.input-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px; pointer-events:none; }
+.input-wrap input { padding-left:40px; }
+.toggle-pwd-btn {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  background:none; border:none; cursor:pointer; font-size:14px; color:var(--muted);
+  transition:color .2s; padding:2px;
+}
+.toggle-pwd-btn:hover { color:var(--teal); }
+
+.form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+/* ── Form extras ── */
+.form-options { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.checkbox-label { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text2); cursor:pointer; }
+.checkbox-label input[type="checkbox"] { width:auto; }
+.forgot-link { font-size:13px; color:var(--teal); text-decoration:none; font-weight:600; }
+.forgot-link:hover { text-decoration:underline; }
+.back-home { display:block; text-align:center; margin-top:20px; font-size:13px; color:var(--muted); text-decoration:none; transition:color .2s; }
+.back-home:hover { color:var(--teal); }
+
+/* ── Password strength ── */
+.pwd-strength { margin-top:6px; display:flex; gap:4px; }
+.ps-bar { height:3px; flex:1; border-radius:2px; background:var(--border); transition:background .3s; }
+.ps-bar.weak   { background:var(--danger); }
+.ps-bar.medium { background:var(--warning); }
+.ps-bar.strong { background:var(--success); }
+
+.char-count { font-size:11px; color:var(--muted); margin-top:4px; text-align:right; font-family:'Fira Code',monospace; }
+
+@media (max-width:900px) {
+  .auth-left { display:none; }
+  .auth-right { padding:24px 20px; }
+}
+@media (max-width:500px) {
+  .form-row-2 { grid-template-columns:1fr; }
+}

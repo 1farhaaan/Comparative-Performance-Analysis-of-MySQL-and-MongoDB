@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Sign In — NexusDesk{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">{% endblock %}
+{% block header %}{% endblock %}
+{% block background %}{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
+<div class="bg-noise"></div>
+<div class="bg-dots"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="auth-page">
+
+  {# ── Left panel ── #}
+  <div class="auth-left">
+    <a href="{{ url_for('main.index') }}" class="auth-logo">
+      <div class="auth-logo-mark">⬡</div>
+      <div class="auth-logo-text">Nexus<span>Desk</span></div>
+    </a>
+    <div class="auth-panel-center">
+      <h2>Welcome back to<br>your workspace.</h2>
+      <p>Pick up right where you left off. Your tickets, your analytics, your team — all waiting for you.</p>
+    </div>
+    <div class="testimonial-box">
+      <p class="t-text">"NexusDesk cut our resolution time from 3 days to 4 hours. It genuinely transformed how our support team operates every single day."</p>
+      <div class="t-author">
+        <div class="t-avatar">PS</div>
+        <div>
+          <div class="t-name">Priya Sharma</div>
+          <div class="t-role">Head of Support, TechNova</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── Right panel ── #}
+  <div class="auth-right">
+    <div class="form-box">
+      <div class="form-box-header">
+        <h1>Sign In</h1>
+        <p>No account yet? <a href="{{ url_for('auth.signup') }}">Create one free →</a></p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="flash flash-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.login') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          <label>Sign in as</label>
+          <div class="role-select">
+            <button type="button" class="role-btn active" onclick="selectRole('client',this)"><span class="rb-icon">👤</span> Client</button>
+            <button type="button" class="role-btn"        onclick="selectRole('admin',this)"><span class="rb-icon">🛡️</span> Admin</button>
+          </div>
+          <input type="hidden" name="role" id="roleInput" value="client">
+        </div>
+
+        <div class="form-group">
+          <label>Email Address <span class="label-req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">✉</span>
+            {{ form.email(placeholder='you@company.com', autocomplete='email') }}
+          </div>
+          {% for e in form.email.errors %}<div class="flash flash-error" style="margin-top:6px">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label>Password <span class="label-req">*</span></label>
+          <div class="input-wrap">
+            <span class="input-icon">🔑</span>
+            {{ form.password(id='passwordField', placeholder='Enter your password') }}
+            <button type="button" class="toggle-pwd-btn" onclick="togglePassword('passwordField',this)" tabindex="-1">👁</button>
+          </div>
+          {% for e in form.password.errors %}<div class="flash flash-error" style="margin-top:6px">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-label">{{ form.remember_me() }} Remember me</label>
+          <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
+        </div>
+
+        {{ form.submit(class='btn-submit') }}
+      </form>
+
+      <a href="{{ url_for('main.index') }}" class="back-home">← Back to homepage</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}
